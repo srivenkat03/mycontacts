@@ -1,5 +1,6 @@
 const asynhandler=require("express-async-handler");
 const bcrypt=require("bcrypt");
+const jwt=require("jsonwebtoken")
 const User=require("../models/usermodels");
 //@desc registation
 //@route POST /api/user/Regitration
@@ -7,12 +8,12 @@ const User=require("../models/usermodels");
 const Register=asynhandler(async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
-      res.status(400);
+      res.status(400).json({error:"All fields are mandatory"});
       throw new Error("All fields are mandatory!");
     }
     const userAvailable = await User.findOne({ email });
     if (userAvailable) {
-      res.status(400);
+      res.status(400).json({error:"User already created"});
       throw new Error("User already registered!");
     }
   
@@ -24,6 +25,7 @@ const Register=asynhandler(async (req, res) => {
       email,
       password: hashedPassword,
     })
+    res.status(201).json({message:"user has been created"})
 });
 
 //@desc Login
@@ -40,4 +42,13 @@ const current=asynhandler(async(req,res)=>{
     res.status(200).json({message:"current information of the user"});
 })
 
-module.exports={Register,Login,current};
+
+//@desc allusers
+//@route GET /api/user/getall
+//@access private
+const allusers=asynhandler(async(req,res)=>{
+  const users=User.find
+})
+
+
+module.exports={Register,Login,current,allusers};
